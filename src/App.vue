@@ -7,7 +7,7 @@
   </header>
 
   <main>
-    <geo-location-search :userInput="''"></geo-location-search>
+    <geo-location-search :userInput="'Vancouver'"></geo-location-search>
   </main>
 </template>
 
