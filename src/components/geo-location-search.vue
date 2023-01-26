@@ -102,31 +102,39 @@ export default {
     },
     async getLocations() {
       try {
-        if (this.searchFilter) {
           clearTimeout(this.avoidShake)
           this.avoidShake = setTimeout(async ()=>{
             let arr = []
-            const res = await axios.get(`https://us1.locationiq.com/v1/search?key=pk.55ec4342dd7f0f5032b399375ad91704&q=${this.searchFilter}&format=json`);
-            console.log('res', res)
-            res.data.forEach((element) => {
-              let temp = (element.display_name).split(",").filter(item => item.trim())
-              arr.push(...new Set(temp))
-            })
-            const tempArr = []
-            arr.forEach((item, index) => {
-              let obj = {};
-              obj.id = index;
-              obj.name = item.trim();
-              tempArr.push(obj);
-            })
-            this.options = [...tempArr]
-            this.optionsShown = true;
+            if (this.searchFilter) {
+                    const res = await axios.get(`https://us1.locationiq.com/v1/search?key=pk.55ec4342dd7f0f5032b399375ad91704&q=${this.searchFilter}&format=json`);
+                    console.log('res', res)
+                    res.data.forEach((element) => {
+                      let temp = (element.display_name).split(",").map(item => item.trim())
+                      arr.push(...new Set(temp)) // this just remove duplicate values from temp;
+                    })
+                      
+                    let newarr = arr.filter((item,index,arr) => {
+                      return arr.indexOf(item, 0) === index;   // return those item that first appears in the array's index equal to current index;
+                    })
+
+                    const tempArr = []
+                    newarr.forEach((item, index) => {
+                      let obj = {};
+                      obj.id = index;
+                      obj.name = item.trim();
+                      tempArr.push(obj);
+                    })
+                    this.options = [...tempArr]
+                    this.optionsShown = true;
+              } else {
+                this.optionsShown = false;
+              }
           },100)
 
 
-        } else {
-          this.optionsShown = false;
-        }
+        // } else {
+        //   this.optionsShown = false;
+        // }
       } catch (error) {
         console.log(error);
       }
